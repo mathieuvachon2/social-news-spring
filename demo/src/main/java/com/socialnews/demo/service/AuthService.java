@@ -1,6 +1,7 @@
 package com.socialnews.demo.service;
 
 import com.socialnews.demo.dto.RegisterRequestDto;
+import com.socialnews.demo.exceptions.SocialNewsException;
 import com.socialnews.demo.model.NotificationEmail;
 import com.socialnews.demo.model.User;
 import com.socialnews.demo.model.VerificationToken;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,8 +41,6 @@ public class AuthService {
                 user.getEmail(), "Thank you for signing up to Spring Social News, " +
                 "please click on the below url to activate your account : " +
                 "http://localhost:8080/api/auth/accountVerification/" + token));
-
-        System.out.println("yooooo " + userRepository.findAll().toString());
     }
 
     private String generateVerificationToken(User user) {
@@ -53,4 +53,19 @@ public class AuthService {
         verificationTokenRepository.save(verificationToken);
         return token;
     }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SocialNewsException("Invalid token"));
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+    @Transactional
+    private void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new SocialNewsException(("User not found with username" +
+                username)));
+        user.setEnabled(true);
+    }
 }
+
