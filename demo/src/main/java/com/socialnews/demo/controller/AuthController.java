@@ -1,5 +1,7 @@
 package com.socialnews.demo.controller;
 
+import com.socialnews.demo.dto.AuthenticationResponse;
+import com.socialnews.demo.dto.LoginRequestDto;
 import com.socialnews.demo.dto.RegisterRequestDto;
 import com.socialnews.demo.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -26,4 +28,8 @@ public class AuthController {
         return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
     }
 
+    @PostMapping("login")
+    public AuthenticationResponse login(@RequestBody LoginRequestDto loginRequestDto) {
+        return authService.login(loginRequestDto);
+    }
 }

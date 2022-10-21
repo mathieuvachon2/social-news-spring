@@ -1,5 +1,7 @@
 package com.socialnews.demo.service;
 
+import com.socialnews.demo.dto.AuthenticationResponse;
+import com.socialnews.demo.dto.LoginRequestDto;
 import com.socialnews.demo.dto.RegisterRequestDto;
 import com.socialnews.demo.exceptions.SocialNewsException;
 import com.socialnews.demo.model.NotificationEmail;
@@ -7,7 +9,12 @@ import com.socialnews.demo.model.User;
 import com.socialnews.demo.model.VerificationToken;
 import com.socialnews.demo.repository.UserRepository;
 import com.socialnews.demo.repository.VerificationTokenRepository;
+import com.socialnews.demo.security.JwtProvider;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +31,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup(RegisterRequestDto registerRequestDto) {
@@ -66,6 +77,17 @@ public class AuthService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new SocialNewsException(("User not found with username" +
                 username)));
         user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+    public AuthenticationResponse login(LoginRequestDto loginRequestDto) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),
+                loginRequestDto.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String token = jwtProvider.generateToken(authenticate);
+
+        return new AuthenticationResponse(token, loginRequestDto.getUsername());
     }
 }
 
