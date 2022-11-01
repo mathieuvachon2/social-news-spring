@@ -1,6 +1,7 @@
 package com.socialnews.demo.security;
 
 import com.socialnews.demo.exceptions.SocialNewsException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,24 @@ public class JwtProvider {
         } catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
             throw new SocialNewsException("Error when getting public key from keystore");
         }
+    }
+
+    public boolean validateToken(String jwt) {
+        Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
+        return true;
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("springblog").getPublicKey();
+        } catch (KeyStoreException e) {
+            throw new SocialNewsException("Error when retrieving public key from the keystore");
+        }
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 
 }
