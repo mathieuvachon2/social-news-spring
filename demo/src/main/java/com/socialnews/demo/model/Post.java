@@ -41,7 +41,7 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id")
-    private Community subreddit;
+    private Community community;
 
 
 

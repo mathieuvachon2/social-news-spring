@@ -1,6 +1,8 @@
 package com.socialnews.demo.service;
 
 import com.socialnews.demo.dto.CommunityDto;
+import com.socialnews.demo.exceptions.SocialNewsException;
+import com.socialnews.demo.mapper.CommunityMapper;
 import com.socialnews.demo.model.Community;
 import com.socialnews.demo.repository.CommunityRepository;
 import lombok.AllArgsConstructor;
@@ -17,10 +19,11 @@ import java.util.stream.Collectors;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
+    private final CommunityMapper communityMapper;
 
     @Transactional
     public CommunityDto save(CommunityDto communityDto) {
-        Community save = communityRepository.save(mapCommunityDto(communityDto));
+        Community save = communityRepository.save(communityMapper.mapDtoToCommunity(communityDto));
         communityDto.setId(save.getId());
         return communityDto;
     }
@@ -29,19 +32,13 @@ public class CommunityService {
     public List<CommunityDto> getAll() {
         return communityRepository.findAll()
                 .stream()
-                .map(this::mapToDto)
+                .map(communityMapper::mapCommunityToDto)
                 .collect(Collectors.toList());
     }
 
-    private CommunityDto mapToDto(Community community) {
-        return CommunityDto.builder().name(community.getName()).id(community.getId())
-                .numberPosts(community.getPosts().size())
-                .build();
-    }
-
-    private Community mapCommunityDto(CommunityDto communityDto) {
-        return Community.builder().name(communityDto.getName())
-                .description(communityDto.getDescription())
-                .build();
+    public CommunityDto getCommunity(Long id) {
+        Community community = communityRepository.findById(id)
+                .orElseThrow(() -> new SocialNewsException("No community found with with that id"));
+        return communityMapper.mapCommunityToDto(community);
     }
 }
