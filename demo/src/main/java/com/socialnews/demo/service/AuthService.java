@@ -2,6 +2,7 @@ package com.socialnews.demo.service;
 
 import com.socialnews.demo.dto.AuthenticationResponse;
 import com.socialnews.demo.dto.LoginRequestDto;
+import com.socialnews.demo.dto.RefreshTokenRequest;
 import com.socialnews.demo.dto.RegisterRequestDto;
 import com.socialnews.demo.exceptions.SocialNewsException;
 import com.socialnews.demo.model.NotificationEmail;
@@ -36,6 +37,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public void signup(RegisterRequestDto registerRequestDto) {
@@ -92,7 +94,12 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtProvider.generateToken(authenticate);
 
-        return new AuthenticationResponse(token, loginRequestDto.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(loginRequestDto.getUsername())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -103,6 +110,17 @@ public class AuthService {
 
         return userRepository.findByUsername(principal.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(refreshTokenRequest.getUsername())
+                .build();
     }
 }
 
