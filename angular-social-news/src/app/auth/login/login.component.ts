@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../shared/auth.service';
+import { LoginRequestPayload } from './login-request.payload';
 
 @Component({
   selector: 'app-login',
@@ -7,4 +10,26 @@ import { Component } from '@angular/core';
 })
 export class LoginComponent {
 
+  loginForm: FormGroup = new FormGroup({
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required)
+  });
+
+  loginRequestPayload: LoginRequestPayload;
+
+  constructor(private authService: AuthService) {
+    this.loginRequestPayload = {
+      username: '',
+      password: ''
+    };
+  }
+
+  login() {
+    this.loginRequestPayload.username = this.loginForm.get('username')?.value;
+    this.loginRequestPayload.password = this.loginForm.get('password')?.value;
+
+    this.authService.login(this.loginRequestPayload).subscribe(data => {
+      console.log('Login successful');
+    });
+  }
 }
