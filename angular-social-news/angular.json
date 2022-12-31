@@ -64,10 +64,6 @@
             "production": {
               "browserTarget": "angular-social-news:build:production"
             },
-            "options": {
-              "browserTarget": "angular-social-news:build:development",
-              "proxyConfig": "src/proxy.conf.json"
-            },
             "development": {
               "browserTarget": "angular-social-news:build:development"
             }
