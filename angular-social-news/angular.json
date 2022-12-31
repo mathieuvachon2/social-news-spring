@@ -26,7 +26,8 @@
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": []
           },
@@ -62,6 +63,10 @@
           "configurations": {
             "production": {
               "browserTarget": "angular-social-news:build:production"
+            },
+            "options": {
+              "browserTarget": "angular-social-news:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             },
             "development": {
               "browserTarget": "angular-social-news:build:development"
