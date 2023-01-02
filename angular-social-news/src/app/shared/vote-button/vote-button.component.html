@@ -1,0 +1,16 @@
+            <!-- Section to Display Votes-->
+
+            <div class="d-flex flex-column votebox">
+                <div class="p-2">
+                <fa-icon class="upvote" [icon]="faArrowUp"></fa-icon>
+                <!-- <fa-icon (click)="upvotePost()" class="upvote" [icon]="faArrowUp" [style.color]="upvoteColor"></fa-icon> -->
+
+                </div>
+                <div class="p-2 votecount">{{post.voteCount}}</div>
+                <div class="p-2">
+                <!-- <fa-icon (click)="downvotePost()" class="downvote" [icon]="faArrowDown" [style.color]="downvoteColor"> -->
+                    <fa-icon class="downvote" [icon]="faArrowDown">
+
+                </fa-icon>
+                </div>
+            </div>
