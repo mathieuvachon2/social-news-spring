@@ -22,6 +22,8 @@ import { CreateCommunityComponent } from './community/create-community/create-co
 import { CreatePostComponent } from './post/create-post/create-post.component';
 import { ListCommunitiesComponent } from './community/list-communities/list-communities.component';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { ViewPostComponent } from './post/view-post/view-post.component';
+import { UserProfileComponent } from './auth/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     CommunitySideBarComponent,
     CreateCommunityComponent,
     CreatePostComponent,
-    ListCommunitiesComponent
+    ListCommunitiesComponent,
+    ViewPostComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,

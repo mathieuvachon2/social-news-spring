@@ -16,9 +16,20 @@
         </a>
       </div>
       <div class="flex-grow-1 float-right">
-        <a routerLink='/signup' class="float-right signup mr-2">Sign up</a>
-        <a routerLink="/login" class="float-right login mr-2">Login</a>
-      </div>
+        <!-- <div class="float-right"> -->
+          <div *ngIf="isLoggedIn">
+              <button (click)="logout()" class="login logout">Logout</button>
+              <button (click)="goToUserProfile()" class="login">Profile</button>
+          </div>
+          <div *ngIf="!isLoggedIn">
+              <a routerLink='/signup' class="float-right signup mr-2">Sign up</a>
+              <a routerLink="/login" class="float-right login mr-2">Login</a>
+          </div>
+            <!-- <button class="userdetails" id="dropdownBasic1" ngbDropdownToggle>
+                <img class="account-icon" src="https://www.redditstatic.com/avatars/avatar_default_08_D4E815.png">
+                {{username}}
+            </button> -->
+      </div> 
     </nav>
   </header>
   <router-outlet></router-outlet>
