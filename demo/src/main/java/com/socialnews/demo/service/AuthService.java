@@ -12,6 +12,7 @@ import com.socialnews.demo.repository.UserRepository;
 import com.socialnews.demo.repository.VerificationTokenRepository;
 import com.socialnews.demo.security.JwtProvider;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -103,7 +104,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    User getCurrentUser() {
+    public User getCurrentUser() {
         org.springframework.security.core.userdetails.User principal =
                 (org.springframework.security.core.userdetails.User)
                         SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -121,6 +122,11 @@ public class AuthService {
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(refreshTokenRequest.getUsername())
                 .build();
+    }
+
+    public boolean isLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
     }
 }
 
